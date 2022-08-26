@@ -1,0 +1,154 @@
+version : "3.2"
+
+services:
+
+  # Database
+  wuizup_database:
+    image: postgres:10.1-alpine
+    container_name: wuizup_database_dev
+    restart: always
+    environment:
+        POSTGRES_PASSWORD: wuizup
+        POSTGRES_USER: wuizup
+        POSTGRES_DB: wuizup
+    expose:
+        - "5432"
+    # ports:
+    #   - 6030:5432
+    networks:
+      - wuizup_network
+
+  # API container
+  wuizup_api:
+    container_name: wuizup_api
+    build: ./
+    volumes:
+      - ./:/webapp
+    ports:
+      - 5600:80
+    depends_on:
+      - wuizup_database
+    restart: always
+    networks:
+      - wuizup_network
+
+  wuizup_minio:
+    image: minio/minio
+    container_name: wuizup_minio
+    ports:
+      - 9050:9000
+    volumes:
+      - ./minio/data:/data
+      - ./minio/config:/root/.minio
+    environment:
+      - MINIO_ACCESS_KEY=02T4P8208IT0Q248WMXC
+      - MINIO_SECRET_KEY=W+HRFfCTHq7Vdy28208ITYH3435eIBBTxqs+fya+VjY58
+    networks:
+      - wuizup_network
+    command: server /data
+  
+
+  # Redis Storage
+  wuizup_redis_dev:
+    container_name: develop_redis
+    image: redis:latest
+    command: ["redis-server", "--appendonly", "yes"]
+    hostname: redis
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379"
+    restart: always
+    networks:
+      - wuizup_network
+
+  # Handle Celery Beat
+  wuizup_celery_beat:
+    container_name: wuizup_celery_beat
+    build: ./
+    volumes:
+      - ./:/webapp
+    command: "celery beat -A app.main.celery_worker.celery  -l info"
+    # links:
+    #   - wuizup_database
+    restart: always
+    depends_on:
+      - wuizup_api
+      - wuizup_redis_dev
+    networks:
+      - wuizup_network
+
+  # Handling celery workers of low level
+  wuizup_celery_worker_low_level:
+    container_name: wuizup_celery_worker_low_level
+    build: ./
+    volumes:
+      - ./:/webapp
+    command: "celery worker -A app.main.celery_worker.celery -Q low --concurrency=5 -Ofair -l info -n worker3.%h"
+    links:
+      - wuizup_database
+    restart: always
+    depends_on:
+      - wuizup_api
+      - wuizup_redis_dev
+    networks:
+      - wuizup_network
+
+  # Handling celery workers of high level
+  wuizup_celery_worker_high_level:
+    container_name: wuizup_celery_worker_high_level
+    build: ./
+    volumes:
+      - ./:/webapp
+    command: "celery worker -A app.main.celery_worker.celery -Q high --concurrency=5 -Ofair -l info -n worker1.%h"
+    links:
+      - wuizup_database
+    restart: always
+    depends_on:
+      - wuizup_api
+      - wuizup_redis_dev
+    networks:
+      - wuizup_network
+
+
+  # Adminer
+  wuizup_adminer:
+    image: adminer
+    container_name: wuizup_adminer
+    restart: always
+    depends_on:
+        - wuizup_database
+    volumes:
+        - ./database:/var/lib/postgresql/data
+    ports:
+        - 8800:8080
+    networks:
+        - wuizup_network
+        
+  # Celery monitoring tool
+  wuizup_monitor:
+    container_name: wuizup_monitor
+    build: ./
+    volumes:
+      - ./:/webapp
+    command: celery flower --port=9500 --address=0.0.0.0 --broker=redis://wuizup_redis_dev/2 --auto_refresh=True
+    ports:
+      - 9500:9500
+    depends_on:
+      - wuizup_api
+      - wuizup_redis_dev
+      # - wuizup_celery_beat
+      - wuizup_celery_worker_high_level
+      - wuizup_celery_worker_low_level
+    networks:
+      - wuizup_network
+
+# Networks
+networks:
+  wuizup_network:
+
+# Volumes
+volumes:
+  redis-data:
+  redis-public-data:
+  data-postgresql:
