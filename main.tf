@@ -104,3 +104,37 @@ resource "aws_security_group" "PrevithequeLBSecurityGroup" {
     "Name" = "PrevithequeLBSecurityGroup"
   }
 }
+
+# Create ALB
+resource "aws_lb" "PrevithequeDevelopLB" {
+  name = "PrevithequeDevelopLB"
+  internal = false
+  load_balancer_type = "application"
+  security_groups = [aws_security_group.PrevithequeLBSecurityGroup.id]
+  subnets = [aws_subnet.publicsubnet1.id, aws_subnet.publicsubnet2.id]
+  
+  access_logs {
+    bucket = aws_s3_bucket.PrevithequeDevelopLB.bucket
+    prefix = "PrevithequeDevelopLB"
+    enabled = true
+  }
+
+  tags = {
+    "Name" = "develop"
+  }
+}
+
+# Create target group
+resource "aws_alb_target_group" "PrevithequeDevelopTargetGroup" {
+  name = "PrevithequeDevelopTargetGroup"
+  port = 80
+  protocol = "HTTP"
+  vpc_id = aws_vpc.previtheque_vpc.id
+  stickiness {
+    type = "lb_cookie"
+  }
+  health_check {
+    path = "/ping"
+    port = 80
+  }
+}
