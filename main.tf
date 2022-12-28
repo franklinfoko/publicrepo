@@ -130,11 +130,7 @@ resource "aws_lb" "PrevithequeDevelopLB" {
   security_groups    = [aws_security_group.PrevithequeLBSecurityGroup.id]
   subnets            = [aws_subnet.publicsubnet1.id, aws_subnet.publicsubnet2.id]
   
-  access_logs {
-    bucket  = aws_s3_bucket.PrevithequeDevelopLBBucket.bucket
-    prefix  = "PrevithequeDevelopLB"
-    enabled = true
-  }
+ 
 
   tags = {
     "Name" = "develop"
