@@ -68,3 +68,31 @@ resource "aws_subnet" "privatesubnet" {
     "Name" = "privatesubnet"
   }
 }
+
+# Create security group
+resource "aws_security_group" "previtheque-sg" {
+  name = "previtheque-sg"
+  description = "Security group for load balancer"
+  vpc_id = aws_vpc.previtheque_vpc.id
+
+  ingress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = -1
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+  ingress {
+    from_port = 80
+    to_port = 80
+    cidr_blocks = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    cidr_blocks = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
