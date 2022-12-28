@@ -158,24 +158,24 @@ resource "aws_alb_target_group" "PrevithequeDevelopTargetGroup" {
 
 # Create alb listeners
 resource "aws_alb_listener" "listener_http" {
-  load_balancer_arn = arn:aws:elasticloadbalancing:eu-west-3:641144733479:loadbalancer/app/PrevithequeDevelopLB/a670cbc202d38ad5
+  load_balancer_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:loadbalancer/app/PrevithequeDevelopLB/a670cbc202d38ad5" 
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
-    target_group_arn = arn:aws:elasticloadbalancing:eu-west-3:641144733479:targetgroup/PrevithequeDevelopTargetGroup/59752d19da62d02a
+    target_group_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:targetgroup/PrevithequeDevelopTargetGroup/59752d19da62d02a"
     type             = "forward"
   }
 }
 
 resource "aws_alb_listener" "listener_https" {
-  load_balancer_arn = arn:aws:elasticloadbalancing:eu-west-3:641144733479:loadbalancer/app/PrevithequeDevelopLB/a670cbc202d38ad5
+  load_balancer_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:loadbalancer/app/PrevithequeDevelopLB/a670cbc202d38ad5"
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
 
   default_action {
-    target_group_arn = arn:aws:elasticloadbalancing:eu-west-3:641144733479:targetgroup/PrevithequeDevelopTargetGroup/59752d19da62d02a
+    target_group_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:targetgroup/PrevithequeDevelopTargetGroup/59752d19da62d02a"
     type = "forward"
   }
 }
