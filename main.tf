@@ -107,10 +107,10 @@ resource "aws_security_group" "PrevithequeLBSecurityGroup" {
 
 # Create S3 bucket
 resource "aws_s3_bucket" "PrevithequeDevelopLBBucket" {
-  bucket = "PrevithequeDevelopLBBucket"
+  bucket = "previthequedeveloplbbucket"
 
   tags = {
-    Name        = "PrevithequeDevelopLBBucket"
+    Name        = "drevithequedeveloplbbucket"
     Environment = "Dev"
   }
 }
@@ -151,4 +151,9 @@ resource "aws_alb_target_group" "PrevithequeDevelopTargetGroup" {
     path = "/ping"
     port = 80
   }
+}
+
+# Create alb listeners
+resource "aws_alb_listener" "listener_http" {
+  load_balancer_arn = 
 }
