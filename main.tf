@@ -108,20 +108,9 @@ resource "aws_security_group" "PrevithequeLBSecurityGroup" {
   }
 }
 
-# Create ALB
-resource "aws_lb" "PrevithequeDevelopLB" {
-  name               = "PrevithequeDevelopLB"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.PrevithequeLBSecurityGroup.id]
-  subnets            = [aws_subnet.publicsubnet1.id, aws_subnet.publicsubnet2.id]
-  
-  tags = {
-    "Name" = "develop"
-  }
-}
+# Create ALB and target for dev
 
-# Create target group
+
 resource "aws_alb_target_group" "PrevithequeDevelopTargetGroup" {
   name     = "PrevithequeDevelopTargetGroup"
   port     = 80
@@ -136,4 +125,31 @@ resource "aws_alb_target_group" "PrevithequeDevelopTargetGroup" {
   }
 }
 
+
+# Create alb and target group for staging
+resource "aws_lb" "PrevithequeStagingLB" {
+  name               = "PrevithequeStagingLB"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.PrevithequeLBSecurityGroup.id]
+  subnets            = [aws_subnet.publicsubnet1.id, aws_subnet.publicsubnet2.id]
+  
+  tags = {
+    "Name" = "staging"
+  }
+}
+
+resource "aws_alb_target_group" "PrevithequeSatgingTargetGroup" {
+  name     = "PrevithequeSatgingTargetGroup"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.previtheque_vpc.id
+  stickiness {
+    type = "lb_cookie"
+  }
+  health_check {
+    path = "/ping"
+    port = 80
+  }
+}
 # Create alb listeners
