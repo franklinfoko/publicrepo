@@ -108,20 +108,6 @@ resource "aws_security_group" "PrevithequeLBSecurityGroup" {
   }
 }
 
-# Create S3 bucket
-resource "aws_s3_bucket" "PrevithequeDevelopLBBucket" {
-  bucket = "previthequedeveloplbbucket"
-
-  tags = {
-    Name        = "drevithequedeveloplbbucket"
-    Environment = "Dev"
-  }
-}
-
-resource "aws_s3_bucket_acl" "example1" {
-  bucket = aws_s3_bucket.PrevithequeDevelopLBBucket.id
-  acl    = "private"
-}
 # Create ALB
 resource "aws_lb" "PrevithequeDevelopLB" {
   name               = "PrevithequeDevelopLB"
@@ -130,8 +116,6 @@ resource "aws_lb" "PrevithequeDevelopLB" {
   security_groups    = [aws_security_group.PrevithequeLBSecurityGroup.id]
   subnets            = [aws_subnet.publicsubnet1.id, aws_subnet.publicsubnet2.id]
   
- 
-
   tags = {
     "Name" = "develop"
   }
