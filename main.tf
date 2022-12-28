@@ -34,6 +34,11 @@ resource "aws_vpc" "previtheque_vpc" {
     }
 }
 
+# Create internet gateway
+resource "aws_internet_gateway" "previtheque-gw" {
+  vpc_id = aws_vpc.previtheque_vpc.id
+}
+
 # Create subnets
 resource "aws_subnet" "publicsubnet1" {
     vpc_id = aws_vpc.previtheque_vpc.id
