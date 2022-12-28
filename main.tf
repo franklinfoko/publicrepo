@@ -154,6 +154,3 @@ resource "aws_alb_target_group" "PrevithequeDevelopTargetGroup" {
 }
 
 # Create alb listeners
-resource "aws_alb_listener" "listener_http" {
-  load_balancer_arn = 
-}
