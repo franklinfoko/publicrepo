@@ -197,6 +197,30 @@ resource "aws_alb_target_group" "PrevithequeSatgingTargetGroup" {
   }
 }
 
+resource "aws_alb_listener" "listener_http" {
+  load_balancer_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:loadbalancer/app/PrevithequeStagingLB/46748cdb42b28b9e" 
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:targetgroup/PrevithequeSatgingTargetGroup/0aceaffc115e450a"
+    type             = "forward"
+  }
+}
+
+resource "aws_alb_listener" "listener_https" {
+  load_balancer_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:loadbalancer/app/PrevithequeStagingLB/46748cdb42b28b9e"
+  port              = 443
+  protocol          = "HTTPS"
+  certificate_arn = "arn:aws:acm:eu-west-3:641144733479:certificate/09fc880a-de59-4944-8e47-3e468dc7fb21"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+
+  default_action {
+    target_group_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:targetgroup/PrevithequeSatgingTargetGroup/0aceaffc115e450a"
+    type = "forward"
+  }
+}
+
 # Create alb and target group for prod
 resource "aws_alb" "PrevithequeProdLB" {
   name               = "PrevithequeProdLB"
