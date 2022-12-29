@@ -109,7 +109,7 @@ resource "aws_security_group" "PrevithequeLBSecurityGroup" {
 }
 
 # Create alb, target group and listener for dev
-resource "aws_lb" "PrevithequeDevelopLB" {
+resource "aws_alb" "PrevithequeDevelopLB" {
   name               = "PrevithequeDevelopLB"
   internal           = false
   load_balancer_type = "application"
@@ -129,7 +129,7 @@ resource "aws_alb_target_group" "PrevithequeDevelopTargetGroup" {
   vpc_id   = aws_vpc.previtheque_vpc.id
 
   depends_on = [
-    aws_lb.PrevithequeDevelopLB
+    aws_alb.PrevithequeDevelopLB
   ]
   stickiness {
     type = "lb_cookie"
@@ -166,7 +166,7 @@ resource "aws_alb_listener" "listener_https" {
 
 
 # Create alb and target group for staging
-resource "aws_lb" "PrevithequeStagingLB" {
+resource "aws_alb" "PrevithequeStagingLB" {
   name               = "PrevithequeStagingLB"
   internal           = false
   load_balancer_type = "application"
@@ -198,7 +198,7 @@ resource "aws_alb_target_group" "PrevithequeSatgingTargetGroup" {
 }
 
 # Create alb and target group for prod
-resource "aws_lb" "PrevithequeProdLB" {
+resource "aws_alb" "PrevithequeProdLB" {
   name               = "PrevithequeProdLB"
   internal           = false
   load_balancer_type = "application"
