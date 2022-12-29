@@ -24,7 +24,7 @@ resource "aws_ecs_task_definition" "PrevithequeTaskDefinitionDev" {
   requires_compatibilities = ["FARGATE"]
   cpu = var.fargate_cpu
   memory = var.fargate_memory
-  container_definitions = data.template_file.previthequeapp.rendered
+  #container_definitions = data.template_file.previthequeapp.rendered
 }
 
 resource "aws_ecs_service" "PrevithequeServiceDev" {
