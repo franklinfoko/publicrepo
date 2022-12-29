@@ -184,6 +184,10 @@ resource "aws_alb_target_group" "PrevithequeSatgingTargetGroup" {
   protocol = "HTTP"
   target_type = "ip"
   vpc_id   = aws_vpc.previtheque_vpc.id
+
+  depends_on = [
+    aws_lb.PrevithequeStagingLB
+  ]
   stickiness {
     type = "lb_cookie"
   }
@@ -212,6 +216,10 @@ resource "aws_alb_target_group" "PrevithequeProdTargetGroup" {
   protocol = "HTTP"
   target_type = "ip"
   vpc_id   = aws_vpc.previtheque_vpc.id
+
+  depends_on = [
+    aws_lb.PrevithequeProdLB
+  ]
   stickiness {
     type = "lb_cookie"
   }
