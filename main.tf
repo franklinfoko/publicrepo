@@ -138,7 +138,8 @@ resource "aws_alb_target_group" "PrevithequeDevelopTargetGroup" {
 
 resource "aws_lb_target_group_attachment" "developAttachment" {
   target_group_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:targetgroup/PrevithequeDevelopTargetGroup/e033d0c4dac62c07"
-  target_id = aws_lb.PrevithequeDevelopLB.id
+  target_id = aws_instance.developAttachment.id
+  port = 80
 }
 resource "aws_alb_listener" "listener_http" {
   load_balancer_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:loadbalancer/app/PrevithequeDevelopLB/0fb2aa1523f94d2d" 
