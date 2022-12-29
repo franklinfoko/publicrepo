@@ -164,4 +164,32 @@ resource "aws_alb_target_group" "PrevithequeSatgingTargetGroup" {
     port = 80
   }
 }
+
+# Create alb and target group for prod
+resource "aws_lb" "PrevithequeProdLB" {
+  name               = "PrevithequeProdLB"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.PrevithequeLBSecurityGroup.id]
+  subnets            = [aws_subnet.publicsubnet1.id, aws_subnet.publicsubnet2.id]
+  
+  tags = {
+    "Name" = "prod"
+  }
+}
+
+resource "aws_alb_target_group" "PrevithequeProdTargetGroup" {
+  name     = "PrevithequeProdTargetGroup"
+  port     = 80
+  protocol = "HTTP"
+  target_type = "ip"
+  vpc_id   = aws_vpc.previtheque_vpc.id
+  stickiness {
+    type = "lb_cookie"
+  }
+  health_check {
+    path = "/ping"
+    port = 80
+  }
+}
 # Create alb listeners
