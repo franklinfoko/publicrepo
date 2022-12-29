@@ -129,7 +129,7 @@ resource "aws_alb_target_group" "PrevithequeDevelopTargetGroup" {
   vpc_id   = aws_vpc.previtheque_vpc.id
 
   depends_on = [
-    aws_alb.PrevithequeDevelopLB
+    aws_lb.PrevithequeDevelopLB
   ]
   stickiness {
     type = "lb_cookie"
