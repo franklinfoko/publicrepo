@@ -268,11 +268,11 @@ resource "aws_alb_listener" "listener_https_prod" {
   load_balancer_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:loadbalancer/app/PrevithequeProdLB/7bfcfd5c2572c49c"
   port              = 443
   protocol          = "HTTPS"
-  certificate_arn = "arn:aws:acm:eu-west-3:641144733479:certificate/09fc880a-de59-4944-8e47-3e468dc7fb21"
+  certificate_arn = "arn:aws:acm:eu-west-3:641144733479:certificate/b9e12d1e-69c7-45d2-9309-31c63e9a27a1"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
 
   default_action {
-    target_group_arn = "arn:aws:acm:eu-west-3:641144733479:certificate/b9e12d1e-69c7-45d2-9309-31c63e9a27a1"
+    target_group_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:targetgroup/PrevithequeProdTargetGroup/f11d146cce369afc"
     type = "forward"
   }
 }
