@@ -22,8 +22,8 @@ resource "aws_ecs_task_definition" "PrevithequeTaskDefinitionDev" {
   execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
   network_mode = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu = var.fargate_cpu
-  memory = var.fargate_memory
+  cpu = 1024
+  memory = 2048
   container_definitions = jsonencode([
     {
       name      = "Api"
