@@ -141,7 +141,7 @@ resource "aws_alb_target_group" "PrevithequeDevelopTargetGroup" {
 }
 
 resource "aws_alb_listener" "listener_http" {
-  load_balancer_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:loadbalancer/app/PrevithequeDevelopLB/0fb2aa1523f94d2d" 
+  load_balancer_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:loadbalancer/app/PrevithequeDevelopLB/80a607860f69fe77" 
   port              = 80
   protocol          = "HTTP"
 
@@ -152,7 +152,7 @@ resource "aws_alb_listener" "listener_http" {
 }
 
 resource "aws_alb_listener" "listener_https" {
-  load_balancer_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:loadbalancer/app/PrevithequeDevelopLB/0fb2aa1523f94d2d"
+  load_balancer_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:loadbalancer/app/PrevithequeDevelopLB/80a607860f69fe77"
   port              = 443
   protocol          = "HTTPS"
   certificate_arn = "arn:aws:acm:eu-west-3:641144733479:certificate/f28702cf-df88-4a36-80f0-42cb725d5e6a"
