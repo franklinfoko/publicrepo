@@ -108,7 +108,7 @@ resource "aws_security_group" "PrevithequeLBSecurityGroup" {
   }
 }
 
-# Create ALB and target for dev
+# Create alb, target group and listener for dev
 resource "aws_lb" "PrevithequeDevelopLB" {
   name               = "PrevithequeDevelopLB"
   internal           = false
@@ -133,6 +133,30 @@ resource "aws_alb_target_group" "PrevithequeDevelopTargetGroup" {
   health_check {
     path = "/ping"
     port = 80
+  }
+}
+
+resource "aws_alb_listener" "listener_http" {
+  load_balancer_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:loadbalancer/app/PrevithequeDevelopLB/0fb2aa1523f94d2d" 
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:targetgroup/PrevithequeDevelopTargetGroup/e033d0c4dac62c07"
+    type             = "forward"
+  }
+}
+
+resource "aws_alb_listener" "listener_https" {
+  load_balancer_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:loadbalancer/app/PrevithequeDevelopLB/0fb2aa1523f94d2d"
+  port              = 443
+  protocol          = "HTTPS"
+  certificate_arn = "arn:aws:acm:eu-west-3:641144733479:certificate/f28702cf-df88-4a36-80f0-42cb725d5e6a"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+
+  default_action {
+    target_group_arn = "arn:aws:elasticloadbalancing:eu-west-3:641144733479:targetgroup/PrevithequeDevelopTargetGroup/e033d0c4dac62c07"
+    type = "forward"
   }
 }
 
