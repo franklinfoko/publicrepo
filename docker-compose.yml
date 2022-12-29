@@ -1,0 +1,154 @@
+version : "3.2"
+
+services:
+
+  # Database
+  privetheque_database:
+    image: postgres:10.1-alpine
+    container_name: privetheque
+    restart: always
+    environment:
+        POSTGRES_PASSWORD: admin
+        POSTGRES_USER: postgres
+        POSTGRES_DB: privetheque
+    expose:
+        - "5432"
+    # ports:
+    #   - 6030:5432
+    networks:
+      - app-network
+
+  # API container
+  privetheque_api:
+    container_name: privetheque_api
+    build: ./
+    volumes:
+      - ./:/webapp
+    ports:
+      - 5028:80
+    depends_on:
+      - privetheque_database
+    restart: always
+    networks:
+      - app-network
+
+  privetheque_minio:
+    image: minio/minio
+    container_name: privetheque_minio
+    ports:
+      - 9010:9000
+    volumes:
+      - ./minio/data:/data
+      - ./minio/config:/root/.minio
+    environment:
+      - MINIO_ACCESS_KEY=02T4P8208IT0Q248WMXC
+      - MINIO_SECRET_KEY=W+HRFfCTHq7Vdy28208ITYH3435eIBBTxqs+fya+VjY58
+    networks:
+      - app-network
+    command: server /data
+  
+
+  # Redis Storage
+  privetheque_redis_dev:
+    container_name: privetheque_redis_dev
+    image: redis:latest
+    command: ["redis-server", "--appendonly", "yes"]
+    hostname: redis
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379"
+    restart: always
+    networks:
+      - app-network
+
+  # Handle Celery Beat
+  privetheque_celery_beat:
+    container_name: privetheque_celery_beat
+    build: ./
+    volumes:
+      - ./:/webapp
+    command: "celery beat -A app.main.celery_worker.celery  -l info"
+    # links:
+    #   - privetheque_database
+    restart: always
+    depends_on:
+      - privetheque_api
+      - privetheque_redis
+    networks:
+      - app-network
+
+  # Handling celery workers of low level
+  privetheque_celery_worker_low_level:
+    container_name: privetheque_celery_worker_low_level
+    build: ./
+    volumes:
+      - ./:/webapp
+    command: "celery worker -A app.main.celery_worker.celery -Q low --concurrency=5 -Ofair -l info -n worker3.%h"
+    links:
+      - privetheque_database
+    restart: always
+    depends_on:
+      - privetheque_api
+      - privetheque_redis_dev
+    networks:
+      - app-network
+
+  # Handling celery workers of high level
+  privetheque_celery_worker_high_level:
+    container_name: privetheque_celery_worker_high_level
+    build: ./
+    volumes:
+      - ./:/webapp
+    command: "celery worker -A app.main.celery_worker.celery -Q high --concurrency=5 -Ofair -l info -n worker1.%h"
+    links:
+      - privetheque_database
+    restart: always
+    depends_on:
+      - privetheque_api
+      - privetheque_redis_dev
+    networks:
+      - app-network
+
+
+  # Adminer
+  privetheque_adminer:
+    image: adminer
+    container_name: privetheque_adminer
+    restart: always
+    depends_on:
+        - privetheque_database
+    volumes:
+        - ./database:/var/lib/postgresql/data
+    ports:
+        - 5095:8080
+    networks:
+        - app-network
+        
+  # Celery monitoring tool
+  privetheque_monitor:
+    container_name: privetheque_monitor
+    build: ./
+    volumes:
+      - ./:/webapp
+    command: celery flower --port=5555 --address=0.0.0.0 --broker=redis://privetheque_redis_dev/2 --auto_refresh=True
+    ports:
+      - 5555:5555
+    depends_on:
+      - privetheque_api
+      - privetheque_redis_dev
+      # - privetheque_celery_beat
+      - privetheque_celery_worker_high_level
+      - privetheque_celery_worker_low_level
+    networks:
+      - app-network
+
+# Networks
+networks:
+  app-network:
+
+# Volumes
+volumes:
+  redis-data:
+  redis-public-data:
+  data-postgresql:
