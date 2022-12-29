@@ -109,12 +109,23 @@ resource "aws_security_group" "PrevithequeLBSecurityGroup" {
 }
 
 # Create ALB and target for dev
-
+resource "aws_lb" "PrevithequeDevelopLB" {
+  name               = "PrevithequeDevelopLB"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.PrevithequeLBSecurityGroup.id]
+  subnets            = [aws_subnet.publicsubnet1.id, aws_subnet.publicsubnet2.id]
+  
+  tags = {
+    "Name" = "develop"
+  }
+}
 
 resource "aws_alb_target_group" "PrevithequeDevelopTargetGroup" {
   name     = "PrevithequeDevelopTargetGroup"
   port     = 80
   protocol = "HTTP"
+  target_type = "IP"
   vpc_id   = aws_vpc.previtheque_vpc.id
   stickiness {
     type = "lb_cookie"
@@ -143,6 +154,7 @@ resource "aws_alb_target_group" "PrevithequeSatgingTargetGroup" {
   name     = "PrevithequeSatgingTargetGroup"
   port     = 80
   protocol = "HTTP"
+  target_type = "IP"
   vpc_id   = aws_vpc.previtheque_vpc.id
   stickiness {
     type = "lb_cookie"
