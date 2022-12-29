@@ -126,7 +126,6 @@ resource "aws_alb_target_group" "PrevithequeDevelopTargetGroup" {
   port     = 80
   protocol = "HTTP"
   target_type = "ip"
-  load_balancer_id = aws_lb.PrevithequeDevelopLB.id
   vpc_id   = aws_vpc.previtheque_vpc.id
   stickiness {
     type = "lb_cookie"
