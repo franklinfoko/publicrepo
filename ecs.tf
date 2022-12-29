@@ -52,7 +52,7 @@ resource "aws_ecs_task_definition" "PrevithequeTaskDefinitionDev" {
       ]
     }
   ])
-
+ 
 }
 
 resource "aws_ecs_service" "PrevithequeServiceDev" {
@@ -70,7 +70,7 @@ resource "aws_ecs_service" "PrevithequeServiceDev" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.PrevithequeDevelopTargetGroup.arn
-    container_name = "previthequeapp"
+    container_name = "Api"
     container_port = var.app_port
   }
 
