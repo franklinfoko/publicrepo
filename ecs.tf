@@ -6,7 +6,7 @@ resource "aws_ecs_cluster" "PrevithequeClusterDev" {
 }
 
 data "template_file" "previthequeapp" {
-  template = file("./templates/image/*")
+  template = file("./templates/image/images.json")
 
   vars = {
     app_image = var.app_image
